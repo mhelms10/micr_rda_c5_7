@@ -24,10 +24,23 @@ please make sure that your homework assignment (R script or quarto doc) is saved
 
 ## Q1:
 
--   Use `read_csv()` to read the file 'sample_data.csv' to an R data frame. Follow the instructions in Ch 7 to format it properly. Make sure the following are true:
-    -   Column names should be *syntactic*, meaning they don't contain spaces.
-    -   N/A values should be represented with the R value `NA`, not the character "N/A".
-    -   Data types (character vs factor vs numeric) should be appropriate.
+students <- read_csv(
+  "../data/sample_data.csv",
+  na = c("N/A", "")
+)
+students <- students |>
+  rename(
+    student_id = `Student ID`,
+    full_name = `Full Name`,
+    favourite_food = favourite.food,
+    meal_plan = mealPlan,
+    age = AGE
+  ) |>
+  mutate(
+    meal_plan = factor(meal_plan),
+    age = parse_number(if_else(age == "five", "5", age))
+  )
+view(students)
 
 # Tidying
 
@@ -37,13 +50,28 @@ Now import the file colloquium_assessment.csv into an R dataframe. This is a rea
 
 ## Q2
 
-Next, use `read_csv()` to import the file colloquium_assessment.csv into an R dataframe. Note that you'll need to make use of some of the optional arguments. Use `?read_csv` to see what they are.
-
-As we discussed in class, the correct shape depends on what you want to do with the data. Use `pivot_longer()` to make the data frame longer, in a way that makes sense.
+colloquium_assessment <- read_csv(
+  "../data/colloquium_assessment.csv",
+  na = c("N/A", "", "NA")
+)
+colloquium_assessment <- colloquium_assessment |>
+  mutate(across(Q7:Q10, as.numeric))
+colloquium_long <- colloquium_assessment |>
+  pivot_longer(
+    cols = Q7:Q10,
+    names_to = "question",
+    values_to = "response"
+  )
+view(colloquium_long)
 
 ## Q3
 
-Finally, calculate this student's average score for each of questions 7-10.
+question_means <- colloquium_long |>
+group_by(question) |>
+  summarize(
+    mean_score = mean(response, na.rm = TRUE)
+  )
+question_means
 
 ## Q4
 
