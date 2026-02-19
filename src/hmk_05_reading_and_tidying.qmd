@@ -25,7 +25,7 @@ please make sure that your homework assignment (R script or quarto doc) is saved
 ## Q1:
 
 students <- read_csv(
-  "../data/sample_data.csv",
+  "/data/sample_data.csv",
   na = c("N/A", "")
 )
 students <- students |>
